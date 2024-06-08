@@ -1,0 +1,76 @@
+<!--
+    FILENAME:    index.html
+    PROGRAMMER:  Ilya Vitman (IV2)
+    PURPOSE:     Rendering 3d-objects.
+    LAST UPDATE: 08.06.2024
+-->
+
+<!doctype html>
+<html lang="ru" class="notranslate" translate="no">
+  <head>
+    <meta name="google" content="notranslate" />
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="m.png" type="image/png" />
+    <title>CGSG:IV2 CGSG'SummerPractice2024. G.3D Drawing</title>
+  </head>
+  <body>
+    <canvas
+      id="tetrahedron"
+      width="1800px"
+      height="900px"
+      style="border: 3px solid red"
+    ></canvas>
+    <!-- <script type="module" src="./lib.js"></script> -->
+    <script>
+      console.log("Start.");
+    </script>
+    <script type="module">
+      console.log("In module.");
+      import { mat4, vec3 } from "./lib.js";
+      //import "./lib.js";
+      let a = mat4();
+      let b = mat4([
+        [1, -4, 2, 5],
+        [7, 3, 1, -23],
+        [6, 3, 78, 2],
+        [-5, 7, 34, 1],
+      ]);
+      console.log(b.inverse());
+      console.log(b.determ4());
+      let Loc = vec3(5, 0, 0);
+      let At = vec3();
+      let Up = vec3(0, 1, 0);
+
+      let Left = -5;
+      let Right = 5;
+      let Top = 5;
+      let Bottom = -5;
+      let Near = 1;
+      let Far = 10;
+
+      console.log(a.view(Loc, At, Up));
+      console.log(a.frustum(Left, Right, Top, Bottom, Near, Far));
+      console.log(a.ortho(Left, Right, Top, Bottom, Near, Far));
+      console.log("Out of module.");
+    </script>
+    <script type="module">
+      import * as vigl from "./render.js";
+
+      window.addEventListener("load", () => {
+        console.log("inizializating gl...");
+        vigl.initGL();
+        console.log("inizializating gl is done!");
+        console.log("rendering is started...");
+        const draw = () => {
+          // drawing
+          vigl.render();
+
+          // animation register
+          window.requestAnimationFrame(draw);
+        };
+        draw();
+      });
+      console.log("rendering is ended!");
+    </script>
+  </body>
+</html>

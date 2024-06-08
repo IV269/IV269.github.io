@@ -1,0 +1,34 @@
+<!--
+    FILENAME:    index.html
+    PROGRAMMER:  Ilya Vitman (IV2)
+    PURPOSE:     Dummy programm for improving programm skills
+    LAST UPDATE: 05.06.2024
+-->
+
+<!DOCTYPE html>
+<html lang="ru" class="notranslate" translate="no">
+  <head>
+    <meta name="google" content="notranslate">    
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="m.png" type="image/png" />
+    <title>CGSG:IV2 CGSG'SummerPractice2024. G.Julia Drawing</title>
+  </head>
+  <body>
+    <canvas id="Julia" width="1800px" height="900px" style="border: 0px solid red"></canvas>
+    <script type="module">
+      import * as vigl from "./script.js";
+ 
+      window.addEventListener("load", () => {
+        vigl.initGL();
+        const draw = () => {
+          // drawing
+          vigl.render();
+ 
+          // animation register
+          window.requestAnimationFrame(draw);
+        };
+        draw();
+      });
+    </script>
+  </body>
+</html>
