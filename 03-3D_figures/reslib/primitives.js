@@ -4,12 +4,14 @@
  * PURPOSE: primitives library for 3D rendering.
  */
 
+import { vec3, mat4 } from "../lib.js";
+
 import "../lib.js";
 
 class _vertex {
-  constructor() {
-    this.p = new vec3();
-    this.n = new vec3();
+  constructor(pos, norm) {
+    this.pos = pos;
+    this.norm = norm;
   }
 } // end of '_vertex' class
 
@@ -17,136 +19,167 @@ export function vertex(...args) {
   return new _vertex(...args);
 } // end of 'vertex' function
 
-class _primitive {
-  constructor(V, Type, NoofV, Ind, NoofI) {
-    (this.VA = 0),
-      (this.VBuf = 0),
-      (this.IBuf = 0),
-      (this.NumOfElements = 0),
-      (this.NumOfPatchPoints = 0),
-      (this.type = 0);
+export function autoNormals(vertexes, indicies) {
+  let i;
 
-    this.Trans = new mat4();
-    (this.MinBB = new vec3()), (MaxBB = new vec3());
-
-    window.gl.createVertexArray(1, this.VA);
-
-    /* Vertex data */
-    if (V != NULL && NoofV != 0) {
-      glBindVertexArray(this.VA);
-
-      window.gl.createBuffer(1, this.VBuf);
-      window.gl.bindBuffer(window.gl.ARRAY_BUFFER, this.VBuf);
-      window.gl.BufferData(
-        window.gl.ARRAY_BUFFER,
-        new Float32Array() * NoofV,
-        V,
-        window.gl.STATIC_DRAW,
-      );
-
-      window.gl.vertexAttribPointer(
-        0,
-        3,
-        window.gl.FLOAT,
-        false,
-        new Float32Array(),
-        0,
-      ); /* position */
-
-      window.gl.vertexAttribPointer(
-        1,
-        2,
-        window.gl.FLOAT,
-        false,
-        new Float32Array(),
-        sizeof(VEC3),
-      ); /* texture coordinates */
-      window.gl.vertexAttribPointer(
-        2,
-        3,
-        window.gl.FLOAT,
-        false,
-        new Float32Array(),
-        sizeof(VEC3) + (sizeof(VEC3) * 2) / 3,
-      ); /* normal */
-      window.gl.vertexAttribPointer(
-        3,
-        4,
-        window.gl.FLOAT,
-        false,
-        new Float32Array(),
-        sizeof(VEC3) * 2 + (sizeof(VEC3) * 2) / 3,
-      ); /* color */
-
-      window.gl.enableVertexAttribArray(0);
-      window.gl.enableVertexAttribArray(1);
-      window.gl.enableVertexAttribArray(2);
-      window.gl.enableVertexAttribArray(3);
-
-      window.gl.bindVertexArray(0);
-    }
-
-    if (Ind != NULL && NoofI != 0) {
-      window.gl.createBuffer(1, this.IBuf);
-      window.gl.bindBuffer(window.gl.ELEMENT_ARRAY_BUFFER, this.IBuf);
-      window.gl.bufferData(
-        window.gl.ELEMENT_ARRAY_BUFFER,
-        sizeof(INT) * NoofI,
-        Ind,
-        GL_STATIC_DRAW,
-      );
-      window.gl.bindBuffer(window.gl.ELEMENT_ARRAY_BUFFER, 0);
-
-      this.NumOfElements = NoofI;
-    } else this.NumOfElements = NoofV;
-
-    this.Type = Type;
-    this.Trans = mat4();
-
-    rndPrimEvalBB(V, NoofV);
+  /* Set all vertex normals to zero */
+  for (i = 0; i < vertexes.length; i++) {
+    vertexes[i].norm = vec3(0);
   }
 
-  rndPrimEvalBB(V, NoofV) {
+  /* Eval normal for every facet */
+  for (i = 0; i < indicies.length; i += 3) {
+    let n0 = indicies[i],
+      n1 = indicies[i + 1],
+      n2 = indicies[i + 2];
+    let p0 = vertexes[n0].pos,
+      p1 = vertexes[n1].pos,
+      p2 = vertexes[n2].pos,
+      N = p1.sub(p0).cross(p2.sub(p0)).normalize();
+
+    vertexes[n0].norm = vertexes[n0].norm.add(N);
+    vertexes[n1].norm = vertexes[n1].norm.add(N);
+    vertexes[n2].norm = vertexes[n2].norm.add(N);
+  }
+
+  /* Normalize all vertex normals */
+  for (i = 0; i < vertexes.length; i++) {
+    vertexes[i].norm = vertexes[i].norm.normalize();
+  }
+}
+
+class _primitive {
+  constructor(rnd, vertexes, indicies) {
+    let smt = [],
+      i = 0;
+
+    autoNormals(vertexes, indicies);
+
+    for (let v of vertexes) {
+      smt[i++] = v.pos.x;
+      smt[i++] = v.pos.y;
+      smt[i++] = v.pos.z;
+      smt[i++] = v.norm.x;
+      smt[i++] = v.norm.y;
+      smt[i++] = v.norm.z;
+    }
+    this.vertexArrayId = rnd.gl.createVertexArray();
+
+    rnd.gl.bindVertexArray(this.vertexArrayId);
+    this.vertexBufferId = rnd.gl.createBuffer();
+
+    rnd.gl.bindBuffer(rnd.gl.ARRAY_BUFFER, this.vertexBufferId);
+    rnd.gl.bufferData(
+      rnd.gl.ARRAY_BUFFER,
+      new Float32Array(smt),
+      rnd.gl.STATIC_DRAW,
+    );
+
+    if (rnd.posLoc != -1) {
+      rnd.gl.vertexAttribPointer(rnd.posLoc, 3, rnd.gl.FLOAT, false, 24, 0);
+      rnd.gl.enableVertexAttribArray(rnd.posLoc);
+      rnd.gl.vertexAttribPointer(rnd.normLoc, 3, rnd.gl.FLOAT, false, 24, 12);
+      rnd.gl.enableVertexAttribArray(rnd.normLoc);
+    }
+
+    this.IndexBufferId = rnd.gl.createBuffer();
+    rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, this.IndexBufferId);
+    rnd.gl.bufferData(
+      rnd.gl.ELEMENT_ARRAY_BUFFER,
+      new Uint16Array(indicies),
+      rnd.gl.STATIC_DRAW,
+    );
+
+    this.numOfElements = indicies.length;
+    this.numOfVertexes = vertexes.length;
+  }
+
+  rndPrimEvalBB(V) {
     (this.MinBB = vec3()), (this.MaxBB = vec3());
 
-    if (V == undefined || V == null || NoofV == 0) {
+    if (V == undefined || V == null || V.length == 0) {
       return;
     }
+    let NoofV = V.length;
     (this.MinBB = V[0].P), (this.MaxBB = V[0].P);
     for (let i = 1; i < NoofV; ++i) {
-      if (MinBB.x > V[i].P.x) {
-        MinBB.x = V[i].P.x;
+      if (this.MinBB.x > V[i].P.x) {
+        this.MinBB.x = V[i].P.x;
       }
-      if (MaxBB.x < V[i].P.x) {
-        MaxBB.x = V[i].P.x;
+      if (this.MaxBB.x < V[i].P.x) {
+        this.MaxBB.x = V[i].P.x;
       }
 
-      if (MinBB.y > V[i].P.y) {
-        MinBB.y = V[i].P.y;
+      if (this.MinBB.y > V[i].P.y) {
+        this.MinBB.y = V[i].P.y;
       }
-      if (MaxBB.y < V[i].P.y) {
-        MaxBB.y = V[i].P.y;
+      if (this.MaxBB.y < V[i].P.y) {
+        this.MaxBB.y = V[i].P.y;
       }
-      if (MinBB.z > V[i].P.z) {
-        MinBB.z = V[i].P.z;
+      if (this.MinBB.z > V[i].P.z) {
+        this.MinBB.z = V[i].P.z;
       }
-      if (MaxBB.z < V[i].P.z) {
-        MaxBB.z = V[i].P.z;
+      if (this.MaxBB.z < V[i].P.z) {
+        this.MaxBB.z = V[i].P.z;
       }
     }
   }
 
-  rndPrimDraw(world) {}
+  render(rnd, world) {
+    let m = mat4();
+
+    let rx = rnd.projSize,
+      ry = rnd.projSize;
+
+    /* Correct aspect ratio */
+    if (rnd.width >= rnd.height) {
+      rx *= rnd.width / rnd.height;
+    } else {
+      ry *= rnd.height / rnd.width;
+    }
+
+    m.frustum(-rx / 2, rx / 2, -ry / 2, ry / 2, rnd.projDist, rnd.farClip);
+
+    m = world.mul(mat4());
+    console.log([].concat(...m.m));
+    rnd.gl.uniformMatrix4fv(
+      rnd.matrProjLoc,
+      false,
+      new Float32Array([].concat(...m.m)),
+    );
+    rnd.gl.uniformMatrix4fv(
+      rnd.matrWLoc,
+      false,
+      new Float32Array([].concat(...world.m)),
+    );
+
+    rnd.gl.clear(rnd.gl.COLOR_BUFFER_BIT);
+    rnd.gl.clear(rnd.gl.DEPTH_BUFFER_BIT);
+    rnd.gl.enable(rnd.gl.DEPTH_TEST);
+    rnd.gl.clearDepth(1.0);
+
+    //rnd.gl.enable(rnd.gl.DEPTH_TEST);
+    //rnd.gl.bindVertexArray(this.vertexArrayId);
+    rnd.gl.bindBuffer(rnd.gl.ELEMENT_ARRAY_BUFFER, this.IndexBufferId);
+    rnd.gl.drawElements(
+      rnd.gl.TRIANGLES,
+      this.numOfElements,
+      rnd.gl.UNSIGNED_SHORT,
+      0,
+    );
+  }
 
   rndPrimFree() {
     if (this.VA != 0) {
-      window.gl.bindVertexArray(this.VA);
-      window.gl.bindBuffer(GL_ARRAY_BUFFER, 0);
-      window.gl.deleteBuffer(1, this.VBuf);
-      window.gl.bindVertexArray(0);
-      window.gl.deleteVertexArray(1, this.VA);
+      rnd.gl.bindVertexArray(this.VA);
+      rnd.gl.bindBuffer(GL_ARRAY_BUFFER, 0);
+      rnd.gl.deleteBuffer(1, this.VBuf);
+      rnd.gl.bindVertexArray(0);
+      rnd.gl.deleteVertexArray(1, this.VA);
     }
-    if (this.IBuf != 0) window.gl.deleteBuffer(1, this.IBuf);
+    if (this.IBuf != 0) {
+      rnd.gl.deleteBuffer(1, this.IBuf);
+    }
   }
 } // end of '_primitives' class
 

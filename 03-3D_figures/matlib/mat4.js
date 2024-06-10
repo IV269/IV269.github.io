@@ -5,10 +5,8 @@
  */
 import "./vec3.js";
 
-const PI = 3.14159265358979323846;
-
 function D2R(L) {
-  return L * (PI / 180.0);
+  return L * (Math.PI / 180.0);
 }
 
 class _mat4 {
@@ -460,5 +458,52 @@ class _mat4 {
 export function mat4(...args) {
   return new _mat4(...args);
 } // end of 'mat4' function
+
+export function matrRotate(angle, axis) {
+  let a = (angle / Math.PI) * 180.0,
+    si = Math.sin(angle),
+    co = Math.cos(angle),
+    v = axis.normalize();
+
+  return mat4([
+    [
+      co + v.x * v.x * (1 - co),
+      v.x * v.y * (1 - co) + v.z * si,
+      v.x * v.z * (1 - co) - v.y * si,
+      0,
+    ],
+    [
+      v.y * v.x * (1 - co) - v.z * si,
+      co + v.y * v.y * (1 - co),
+      v.y * v.z * (1 - co) + v.x * si,
+      0,
+    ],
+    [
+      v.z * v.x * (1 - co) + v.y * si,
+      v.z * v.y * (1 - co) - v.x * si,
+      co + v.z * v.z * (1 - co),
+      0,
+    ],
+    [0, 0, 0, 1],
+  ]);
+}
+
+export function matrTranslate(t) {
+  return mat4([
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [t.x, t.y, t.z, 1],
+  ]);
+}
+
+export function matrScale(s) {
+  return mat4([
+    [s.x, 0, 0, 0],
+    [0, s.y, 0, 0],
+    [0, 0, s.z, 0],
+    [0, 0, 0, 1],
+  ]);
+}
 
 /* END OF 'mat4.js' FILE */
