@@ -15,7 +15,7 @@ class _Render {
     this.farClip = 300;
 
     this.gl = canvas.getContext("webgl2");
-    this.gl.clearColor(0.8, 0.37, 0.42, 1);
+    this.gl.clearColor(0.36, 0.64, 0.62, 1);
 
     this.gl.enable(this.gl.DEPTH_TEST);
 
@@ -59,10 +59,12 @@ class _Render {
         vec3 N = normalize(DrawNormal);
         
         N = faceforward(N, normalize(DrawPos), N);
+
+        N = vec3(N.x, -N.y, N.z);
         
         float k = dot(L, normalize(N));
 
-        OutColor = vec4(DrawNormal, 1.0);
+        OutColor = vec4(k * vec3(0.76, 0.78, 0.16)/*1.2 * k * vec3(0.35, 0.51, 0.89)*/, 1.0);
     }
     `;
 

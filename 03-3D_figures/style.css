@@ -1,3 +1,8 @@
+.box {
+  display: inline-block;
+  border: 1px dotted blue;
+}
+
 canvas {
   border-radius: 5px;
   padding: 3px;
