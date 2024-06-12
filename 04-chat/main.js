@@ -4,7 +4,8 @@ import express from "express";
 
 const app = express();
 
-let clients = new Set();
+const clients = new Set();
+let messages = new Set();
 
 app.get("/", (req, res, next) => {
     next();
@@ -24,6 +25,9 @@ wss.on("connection", (ws) => {
     });
     ws.onmessage = (mess) => {
         let p = mess.data;
+        messages.add(p);
+
+        console.log(messages);
         for (let client of clients) {
             client.send(p);
         }
