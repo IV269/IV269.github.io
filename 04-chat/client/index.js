@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://localhost:8000");
+let socket = new WebSocket("ws://localhost:8080");
 let mes = "";
 
 console.log("Loaded");

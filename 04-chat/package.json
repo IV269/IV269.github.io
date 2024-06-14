@@ -4,21 +4,23 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "type": "module",
     "author": "",
     "license": "ISC",
     "dependencies": {
-      "@rollup/plugin-node-resolve": "^15.2.3",
-      "gl-matrix": "^3.4.3",
-      "http-server": "^14.1.1",
-      "prettier": "^3.3.1",
-      "rollup": "^4.18.0",
-      "tweakpane": "^4.0.3",
-      "uglify": "^0.1.5"
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "express": "^4.19.2",
+        "gl-matrix": "^3.4.3",
+        "http-server": "^14.1.1",
+        "prettier": "^3.3.1",
+        "rollup": "^4.18.0",
+        "tweakpane": "^4.0.3",
+        "uglify": "^0.1.5",
+        "ws": "^8.17.0"
     },
     "devDependencies": {
-      "@rollup/plugin-terser": "^0.4.4"
+        "@rollup/plugin-terser": "^0.4.4"
     }
-  }
+}

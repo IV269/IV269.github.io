@@ -24,8 +24,8 @@ class Figure {
 
       for (let i = 2; i < edge.length; i++) {
         indicies.push(j + 0);
-        indicies.push(j + i - 1);
         indicies.push(j + i);
+        indicies.push(j + i - 1);
       }
       j += edge.length;
     }
@@ -37,43 +37,21 @@ class Figure {
 export class Cube extends Figure {
   constructor() {
     super();
+    let ldf = vec3(-0.5, -0.5, -0.5),
+      lde = vec3(-0.5, -0.5, 0.5),
+      lue = vec3(-0.5, 0.5, 0.5),
+      luf = vec3(-0.5, 0.5, -0.5),
+      rdf = vec3(0.5, -0.5, -0.5),
+      rue = vec3(0.5, 0.5, 0.5),
+      rde = vec3(0.5, -0.5, 0.5),
+      ruf = vec3(0.5, 0.5, -0.5);
     this.vertexes = [
-      [
-        vec3(-0.5, -0.5, -0.5),
-        vec3(-0.5, 0.5, -0.5),
-        vec3(0.5, 0.5, -0.5),
-        vec3(0.5, -0.5, -0.5),
-      ], // Front
-      [
-        vec3(-0.5, -0.5, 0.5),
-        vec3(-0.5, 0.5, 0.5),
-        vec3(0.5, 0.5, 0.5),
-        vec3(0.5, -0.5, 0.5),
-      ], // Back
-      [
-        vec3(-0.5, -0.5, -0.5),
-        vec3(-0.5, -0.5, 0.5),
-        vec3(-0.5, 0.5, 0.5),
-        vec3(-0.5, 0.5, -0.5),
-      ], // Left
-      [
-        vec3(0.5, -0.5, -0.5),
-        vec3(0.5, -0.5, 0.5),
-        vec3(0.5, 0.5, 0.5),
-        vec3(0.5, 0.5, -0.5),
-      ], // Right
-      [
-        vec3(-0.5, -0.5, -0.5),
-        vec3(-0.5, -0.5, 0.5),
-        vec3(0.5, -0.5, 0.5),
-        vec3(0.5, -0.5, -0.5),
-      ], // Bottom
-      [
-        vec3(-0.5, 0.5, -0.5),
-        vec3(-0.5, 0.5, 0.5),
-        vec3(0.5, 0.5, 0.5),
-        vec3(0.5, 0.5, -0.5),
-      ], // Top
+      [ldf, luf, ruf, rdf], // Front
+      [lde, lue, rue, rde], // Back
+      [ldf, lde, lue, luf], // Left
+      [rdf, rde, rue, ruf], // Right
+      [ldf, lde, rde, rdf], // Bottom
+      [luf, lue, rue, ruf], // Top
     ];
   }
 }
@@ -240,5 +218,42 @@ export class Dodecahedron extends Figure {
       [v45, v41, v21, v35, v25],
       [v41, v42, v43, v44, v45],
     ];
+  }
+}
+
+export class FrustumCube extends Figure {
+  constructor() {
+    super();
+    /*
+    let ldf = vec3(-0.5, -0.5, -0.5),
+      lde = vec3(-0.5, -0.5, 0.5),
+      lue = vec3(-0.5, 0.5, 0.5),
+      luf = vec3(-0.5, 0.5, -0.5),
+      rdf = vec3(0.5, -0.5, -0.5),
+      rue = vec3(0.5, 0.5, 0.5),
+      rde = vec3(0.5, -0.5, 0.5),
+      ruf = vec3(0.5, 0.5, -0.5),
+      x = 1 / (2 + Math.sqrt(2));
+
+    this.vertexes = [
+      [
+        vec3(ldf.x, ldf.y + x, ldf.z),
+        vec3(ldf.x + x, ldf.y, ldf.z),
+        vec3(ruf.x, ruf.y - x, ruf.z),
+        vec3(ruf.x - x, ruf.y, ruf.z),
+        vec3(luf.x + x, luf.y, luf.z),
+        vec3(luf.x, luf.y - x, luf.z),
+        vec3(rdf.x, rdf.y + x, rdf.z),
+        vec3(rdf.x - x, rdf.y, rdf.z),
+      ], // Front
+      /*
+      [lde, lue, rue, rde], // Back
+      [ldf, lde, lue, luf], // Left
+      [rdf, rde, rue, ruf], // Right
+      [ldf, lde, rde, rdf], // Bottom
+      [luf, lue, rue, ruf], // Top
+      * /
+    ];
+    */
   }
 }

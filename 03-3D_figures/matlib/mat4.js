@@ -486,6 +486,24 @@ export function matrRotate(angle, axis) {
     ],
     [0, 0, 0, 1],
   ]);
+  // let m = mat4([
+  //   [
+  //     co + C.x * C.x * (1 - co),
+  //     C.x * C.y * (1 - co) + C.z * si,
+  //     C.x * C.z * (1 - co) - C.y * si,
+  //     0,
+  //   ][
+  //     (C.y * C.x * (1 - co) - C.z * si,
+  //     co + C.y * C.y * (1 - co),
+  //     C.y * C.z * (1 - co) + C.x * si,
+  //     0)
+  //   ][
+  //     (C.z * C.x * (1 - co) + C.y * si,
+  //     0,
+  //     C.z * C.y * (1 - co) + C.x * si,
+  //     co + C.z * C.z * (1 - co))
+  //   ][(0, 0, 0, 1)],
+  // ]);
 }
 
 export function matrTranslate(t) {

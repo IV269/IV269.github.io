@@ -25,6 +25,7 @@ import {
   Octahedron,
   Icosahedron,
   Dodecahedron,
+  FrustumCube,
 } from "./figure.js";
 
 export {
@@ -43,6 +44,7 @@ export {
   Octahedron,
   Icosahedron,
   Dodecahedron,
+  FrustumCube,
 };
 
 console.log("Load done.");

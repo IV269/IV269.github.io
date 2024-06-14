@@ -10,9 +10,9 @@ class _Render {
   constructor(canvas) {
     this.canvas = canvas;
 
-    this.projSize = 0.1;
-    this.projDist = 0.1;
-    this.farClip = 300;
+    this.projSize = 1;
+    this.projDist = 1;
+    this.farClip = 9000;
 
     this.gl = canvas.getContext("webgl2");
     this.gl.clearColor(0.36, 0.64, 0.62, 1);
@@ -55,7 +55,7 @@ class _Render {
 
     void main( void )
     {
-        vec3 L = normalize(vec3(0.1, 0.4, 1.0));
+        vec3 L = normalize(vec3(0.1, 0.4, 0.8));
         vec3 N = normalize(DrawNormal);
         
         N = faceforward(N, normalize(DrawPos), N);
@@ -64,7 +64,7 @@ class _Render {
         
         float k = dot(L, normalize(N));
 
-        OutColor = vec4(k * vec3(0.76, 0.78, 0.16)/*1.2 * k * vec3(0.35, 0.51, 0.89)*/, 1.0);
+        OutColor = vec4(DrawPos * (sin(Time) * k * 2.0 + k) - N * 0.7 + L * 1.3/*k * vec3(0.76, 0.78, 0.16)*//*1.2 * k * vec3(0.35, 0.51, 0.89)*/, 1.0);
     }
     `;
 
@@ -104,9 +104,10 @@ class _Render {
     return shader;
   } // End of 'loadShader' function
 
-  renderStart() {
+  renderStart(IsPause) {
     //this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     //this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
+    this.Timer.isPause = IsPause;
 
     if (this.timeLoc != -1) {
       const date = new Date();

@@ -72,7 +72,7 @@ class _primitive {
     rnd.gl.bufferData(
       rnd.gl.ARRAY_BUFFER,
       new Float32Array(smt),
-      rnd.gl.STATIC_DRAW,
+      rnd.gl.STATIC_DRAW
     );
 
     if (rnd.posLoc != -1) {
@@ -87,7 +87,7 @@ class _primitive {
     rnd.gl.bufferData(
       rnd.gl.ELEMENT_ARRAY_BUFFER,
       new Uint16Array(indicies),
-      rnd.gl.STATIC_DRAW,
+      rnd.gl.STATIC_DRAW
     );
 
     this.numOfElements = indicies.length;
@@ -140,16 +140,16 @@ class _primitive {
 
     m.frustum(-rx / 2, rx / 2, -ry / 2, ry / 2, rnd.projDist, rnd.farClip);
 
-    m = world.mul(mat4());
+    m = world.mul(m);
     rnd.gl.uniformMatrix4fv(
       rnd.matrProjLoc,
       false,
-      new Float32Array([].concat(...m.m)),
+      new Float32Array([].concat(...m.m))
     );
     rnd.gl.uniformMatrix4fv(
       rnd.matrWLoc,
       false,
-      new Float32Array([].concat(...world.m)),
+      new Float32Array([].concat(...world.m))
     );
 
     rnd.gl.clear(rnd.gl.COLOR_BUFFER_BIT);
@@ -164,7 +164,7 @@ class _primitive {
       rnd.gl.TRIANGLES,
       this.numOfElements,
       rnd.gl.UNSIGNED_SHORT,
-      0,
+      0
     );
   }
 

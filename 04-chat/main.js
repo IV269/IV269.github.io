@@ -35,7 +35,7 @@ wss.on("connection", (ws) => {
 });
 
 const host = "localhost";
-const port = 8000;
+const port = 8080;
 
 server.listen(port, host, () => {
     console.log(`Server started on http://${host}:${port}`);
