@@ -142,9 +142,9 @@ function compute_edt(bool_field, he, wi) {
     for (let i = 0; i < he; i++) {
         for (let j = 0; j < wi; j++) {
             if (r[i * wi + j]) {
-                r[i * wi + j] = 0;
-            } else {
                 r[i * wi + j] = +INF;
+            } else {
+                r[i * wi + j] = 0;
             }
             sedt[i][j] = r[i * wi + j];
         }
